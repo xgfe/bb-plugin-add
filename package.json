@@ -1,0 +1,40 @@
+{
+  "name": "bb-plugin-add",
+  "bin": {
+    "bb-plugin-add": "./bin/index.js"
+  },
+  "version": "0.1.0",
+  "description": "a self-defining module generator plugin for bb-mt",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xgfe/bb-plugin-add.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xgfe/bb-plugin-add/issues"
+  },
+  "homepage": "https://github.com/xgfe/bb-plugin-add#readme",
+  "devDependencies": {
+    "fs-extra": "^6.0.1",
+    "fullname": "^3.3.0",
+    "inquirer": "^6.0.0",
+    "shelljs": "^0.8.2",
+    "simple-git": "^1.96.0"
+  },
+  "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "chalk": "^2.4.1",
+    "fs-readfile-promise": "^3.0.1",
+    "fullname": "^3.3.0",
+    "glob": "^7.1.2",
+    "simple-git": "^1.96.0"
+  }
+}
