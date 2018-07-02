@@ -34,7 +34,7 @@ $ mkdir my-component && cd my-component
 Execute cli: bb add my-component test.
 Now, a folder named test with test.vue exist in root path.
 
-## Template Match Keyword
+## Template Keyword
 
 ```sh
 # for example, edit template file like this
@@ -57,7 +57,21 @@ First, you can use build-in keywords to defined specific info.
 
 Also, you can use self-defining keywords.
 
-Edit .tpl/config.json manually.
+Just edit .tpl/config.json manually.
+
+## Match Rules
+
+Symbol increase
+- `+keyword|[type]`
+  increase symbol.
+- `left>right`
+```sh
+# example
+bb add component left>right
+```
+- `left-right`
+- ``
+
 
 ```sh
 # if self-defining keyword is equal to build-in keyword, build-in keyword will be override!
@@ -67,7 +81,6 @@ Edit .tpl/config.json manually.
   }
 }
 ```
-
 
 ## License
 
