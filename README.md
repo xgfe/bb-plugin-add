@@ -8,7 +8,7 @@ A self-defining module generator plugin for bb-mt
 
 First, you should install bb and this plugin:
 ```sh
-$ npm install -g bb bb-plugin-add
+$ npm install -g bb-mt bb-plugin-add
 
 ```
 Next, create your own project folder and init:
