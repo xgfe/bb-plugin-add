@@ -1,5 +1,8 @@
 # bb-plugin-add
-a self-defining module generator plugin for bb-mt
+
+[![Build Status](https://travis-ci.org/xgfe/bb-plugin-add.svg?branch=master)](https://travis-ci.org/xgfe/bb-plugin-add)
+
+A self-defining module generator plugin for bb-mt
 
 ## Get Start
 
