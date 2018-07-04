@@ -3,11 +3,11 @@
   "bin": {
     "bb-plugin-add": "./bin/index.js"
   },
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "a self-defining module generator plugin for bb-mt",
   "main": "index.js",
   "scripts": {
-    "build":"babel src --out-dir dist"
+    "build": "babel src --out-dir dist"
   },
   "repository": {
     "type": "git",
