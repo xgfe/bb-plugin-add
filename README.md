@@ -1,6 +1,6 @@
 # bb-plugin-add
 
-[![Build Status](https://travis-ci.org/xgfe/bb-plugin-add.svg?branch=master)](https://travis-ci.org/xgfe/bb-plugin-add)
+[![npm](https://img.shields.io/npm/v/npm.svg)][![npm version](https://badge.fury.io/js/bb-plugin-add.svg)](https://badge.fury.io/js/bb-plugin-add)[![Build Status](https://travis-ci.org/xgfe/bb-plugin-add.svg?branch=master)](https://travis-ci.org/xgfe/bb-plugin-add)
 
 A self-defining module generator plugin for bb-mt
 
@@ -11,7 +11,7 @@ First, you should install bb and this plugin:
 $ npm install -g bb-mt bb-plugin-add
 
 ```
-Next, create your own project folder and init:
+Next, create your own project folder and run init:
 ```sh
 $ mkdir my-project && cd my-project
 $ bb init
@@ -37,30 +37,36 @@ $ mkdir my-component && cd my-component
 Execute cli: bb add my-component test.
 Now, a folder named test with test.vue exist in root path.
 
-## Template Keyword
+## Keywords
 
 ```sh
 # for example, edit template file like this
-// project name is ${name}
+# project name is ${name}
 export { default as ${name}} from "${name}"
 ```
 
-First, you can use build-in keywords to defined specific info.
+### Build-in Keywords
+
+You can use build-in keywords below:
 
 - `name`
-  Name of user input.
+  Name user input.
 - `datetime`
-  System time.
+  Datetime in os.
 - `fullname`
-  Default username of system.
+  Username in os.
 - `gitname`
-  Username of git.
+  Username in git.
 - `email`
   Email of git.
 
-Also, you can use self-defining keywords.
+### Self-defining Keywords
 
-Just edit .tpl/config.json manually.
+You can set up self-defining keywords in config.json:
+
+```sh
+
+```
 
 ## Match Rules
 
@@ -75,7 +81,6 @@ bb add component left>right
 - `left-right`
 - ``
 
-
 ```sh
 # if self-defining keyword is equal to build-in keyword, build-in keyword will be override!
 {
@@ -87,7 +92,10 @@ bb add component left>right
 
 ## Naming Standard
 
+# build-in function
+```sh
 
+```
 
 ## License
 

@@ -2,4 +2,4 @@
 require('babel-polyfill');
 require('babel-register');
 
-require('../dist/cli.js');
+require('../src/cli.js');
