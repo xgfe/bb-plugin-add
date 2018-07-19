@@ -132,7 +132,7 @@ class Core {
         inquirer.prompt([{
             type: 'list',
             name: 'param',
-            message: 'Which entity to build?',
+            message: '🤔 Which entity to build?',
             choices: this.templates
         }]).then(async answers => {
             this.templates.some(item => {
