@@ -1,6 +1,6 @@
 # bb-plugin-add
 
-[![npm](https://img.shields.io/npm/v/npm.svg)][![npm version](https://badge.fury.io/js/bb-plugin-add.svg)](https://badge.fury.io/js/bb-plugin-add)[![Build Status](https://travis-ci.org/xgfe/bb-plugin-add.svg?branch=master)](https://travis-ci.org/xgfe/bb-plugin-add)
+[![npm]](https://img.shields.io/npm/v/npm.svg)[![npm version](https://badge.fury.io/js/bb-plugin-add.svg)](https://badge.fury.io/js/bb-plugin-add)[![Build Status](https://travis-ci.org/xgfe/bb-plugin-add.svg?branch=master)](https://travis-ci.org/xgfe/bb-plugin-add)
 
 A self-defining module generator plugin for bb-mt
 
@@ -70,16 +70,16 @@ You can set up self-defining keywords in config.json
 
 ## Naming Standard
 
-# Build-in Functions
+## Build-in Functions
 
-UPPERCASE
-LOWERCASE
-HASH
-HEAD_UPPER
-HEAD_LOWER
-GAP_HYPHEN
-GAP_UNDERSCORE
-CSS_CLASS_HYPHEN_STYLE
+- UPPERCASE
+- LOWERCASE
+- HASH
+- HEAD_UPPER
+- HEAD_LOWER
+- GAP_HYPHEN
+- GAP_UNDERSCORE
+- CSS_CLASS_HYPHEN_STYLE
 
 ## License
 
