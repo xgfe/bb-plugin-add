@@ -20,6 +20,7 @@ Now, We find .tpl in root path.
 ```sh
 $ cd .tpl
 ```
+
 Then, create config.json:
 ```sh
 # config.json
@@ -29,12 +30,15 @@ Then, create config.json:
   }
 }
 ```
+
 create some template files:
 ```sh
 $ mkdir my-component && cd my-component
 # my-template.vue
 ```
+
 Execute cli: bb add my-component test.
+
 Now, a folder named test with test.vue exist in root path.
 
 ## Keywords
@@ -62,40 +66,20 @@ You can use build-in keywords below:
 
 ### Self-defining Keywords
 
-You can set up self-defining keywords in config.json:
-
-```sh
-
-```
-
-## Match Rules
-
-Symbol increase
-- `+keyword|[type]`
-  increase symbol.
-- `left>right`
-```sh
-# example
-bb add component left>right
-```
-- `left-right`
-- ``
-
-```sh
-# if self-defining keyword is equal to build-in keyword, build-in keyword will be override!
-{
-  "keywords":{
-    "myname":"tom"
-  }
-}
-```
+You can set up self-defining keywords in config.json
 
 ## Naming Standard
 
-# build-in function
-```sh
+# Build-in Functions
 
-```
+UPPERCASE
+LOWERCASE
+HASH
+HEAD_UPPER
+HEAD_LOWER
+GAP_HYPHEN
+GAP_UNDERSCORE
+CSS_CLASS_HYPHEN_STYLE
 
 ## License
 

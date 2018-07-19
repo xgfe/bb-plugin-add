@@ -4,4 +4,4 @@ module.exports = {
         const dateString = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
         return dateString;
     }
-}
+};

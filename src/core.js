@@ -73,7 +73,7 @@ class Core {
         }
 
         // Not find config.js in root path.
-        prompt([{
+        inquirer.prompt([{
             type: 'confirm',
             name: 'tpl',
             message: 'Sorry, not find config files root path. init that and continue?'
@@ -93,11 +93,11 @@ class Core {
             const innerConfigPath = this.tplPath + '/' + headerParam + '/config.json';
             const innerConfigExist = await fs.existsSync(innerConfigPath);
 
-            if(!this.templates.includes(headerParam)){
+            if (!this.templates.includes(headerParam)) {
                 console.log(headerParam + ' is not a valid cli!');
                 return;
             }
-
+            // if config.js exist
             if (innerConfigExist) {
                 let innerConfig = await fs.readFileSync(innerConfigPath, 'utf-8');
                 // match self-defining and build-in keywords
@@ -107,7 +107,21 @@ class Core {
                 const data = JSON.parse(innerConfig);
                 const innerPath = this.tplPath + '/' + headerParam;
                 Object.keys(data.files).forEach(async item => {
-                    await this.copyFile(innerPath + '/' + item, DESTINATION_PATH + '/' + data.address + '/' + data.files[item].path);
+                    const obj = data.files[item];
+                    const direction = DESTINATION_PATH + '/' + data.address + '/' + obj.path;
+                    const pathDir = DESTINATION_PATH + '/' + data.address + '/' + obj.path;
+                    if (obj.execute) {
+                        let pathExist = await fs.existsSync(pathDir, 'utf-8');
+                        if(pathExist) {
+                            await this.echo2File(
+                                Parser.parse(obj.execute).output,
+                                pathDir,
+                                Parser.parse(obj.check).output
+                            );
+                            return;
+                        }
+                    }
+                    await this.copyFile(innerPath + '/' + item, direction);
                     console.log(chalk.blue('new template') + ' : ' + chalk.green(data.files[item].path) + '');
                 });
             }
@@ -115,7 +129,7 @@ class Core {
         }
 
         // Not find headerParam
-        prompt([{
+        inquirer.prompt([{
             type: 'list',
             name: 'param',
             message: 'Which entity to build?',
@@ -123,7 +137,7 @@ class Core {
         }]).then(async answers => {
             this.templates.some(item => {
                 if (answers.param === item) {
-                    prompt([{
+                    inquirer.prompt([{
                         type: 'input',
                         name: 'name',
                         message: 'input a ' + item + ' name'
@@ -135,7 +149,7 @@ class Core {
         });
     }
 
-    async copyFile(from, to, filter = null) {
+    async copyFile(from, to) {
         try {
             let data = await readFile(from, 'utf-8');
             data = data.replace(KEYWORD_REGEXP, function (value) {
@@ -146,8 +160,30 @@ class Core {
             console.log(e)
         }
     }
+
+    async echo2File(string, dir, check) {
+        try {
+            const data = await readFile(dir, 'utf-8');
+            let array = data.split('\n');
+            let flag = 0;
+            let exist = false;
+            array.forEach((item, index) => {
+                const match = /from/g.test(item);
+                exist = new RegExp(check, 'g').test(item) || exist;
+                if (match) {
+                    flag = index;
+                }
+            });
+            !exist && array.splice(flag + 1, 0, string);
+
+            await fse.outputFile(dir, array.join('\n'));
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
 }
 
-module.exports = function (){
+module.exports = function () {
     return new Core();
 };

@@ -30,280 +30,296 @@ var modalName = process.argv.slice(3)[0] || null;
 
 // ${} match keyword
 var KEYWORD_REGEXP = /\$\{[^}]+\}/g;
-//
-// const MATCH_PLUS = //g;
 
 var Core = function () {
     function Core() {
-        var _this = this;
-
         _classCallCheck(this, Core);
 
-        this._matchKeyword = function (keyword) {
-            var param = keyword.slice(2, -1);
-            // console.log(param, this.keyword[param]) ???
-            if (_this.keyword[param]) {
-                return _this.keyword[param];
-            }
-            return keyword;
-        };
-
-        this.initKeyword = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-            var userFullname, _ref2, username, email;
-
-            return regeneratorRuntime.wrap(function _callee$(_context) {
-                while (1) {
-                    switch (_context.prev = _context.next) {
-                        case 0:
-                            _context.next = 2;
-                            return fullname().then(function (name) {
-                                return Promise.resolve(name);
-                            });
-
-                        case 2:
-                            userFullname = _context.sent;
-                            _context.next = 5;
-                            return new Promise(function (resolve) {
-                                simpleGit.raw(['config', '--list'], function (err, result) {
-                                    var gitConfig = {};
-                                    result.split('\n').forEach(function (item) {
-                                        var freg = item.split('=');
-                                        gitConfig[freg[0]] = freg[1];
-                                    });
-                                    return resolve({
-                                        username: gitConfig['user.name'],
-                                        email: gitConfig['user.email']
-                                    });
-                                });
-                            });
-
-                        case 5:
-                            _ref2 = _context.sent;
-                            username = _ref2.username;
-                            email = _ref2.email;
-
-
-                            namespace.core = {
-                                name: modalName,
-                                fullname: userFullname,
-                                username: username,
-                                email: email,
-                                datetime: util.getNow()
-                            };
-
-                        case 9:
-                        case 'end':
-                            return _context.stop();
-                    }
-                }
-            }, _callee, _this);
-        }));
-
-        this.keyword = {};
+        this.templates = [];
 
         this.tplPath = DESTINATION_PATH + '/.tpl';
         this.rootConfig = this.tplPath + '/config.json';
+        this.rootConfigPath = this.tplPath + '/config.json';
     }
 
     _createClass(Core, [{
         key: 'init',
         value: function () {
-            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
-                var _this2 = this;
-
-                var existRootConfig, configFile, clis, innerConfigPath, existInnerConfig, innerConfig, data, innerPath;
-                return regeneratorRuntime.wrap(function _callee6$(_context6) {
+            var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
-                        switch (_context6.prev = _context6.next) {
+                        switch (_context.prev = _context.next) {
                             case 0:
-                                _context6.next = 2;
-                                return this.initKeyword();
+                                _context.next = 2;
+                                return this.initCoreKeyword();
 
                             case 2:
-                                _context6.next = 4;
-                                return fs.existsSync(this.rootConfig);
+                                _context.next = 4;
+                                return this.parseRootConfig();
 
                             case 4:
-                                existRootConfig = _context6.sent;
+                                _context.next = 6;
+                                return this.parseEntityConfig();
 
-                                if (!existRootConfig) {
-                                    _context6.next = 31;
-                                    break;
-                                }
+                            case 6:
+                            case 'end':
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
 
-                                // read config.json in rootPath
-                                configFile = require(this.rootConfig);
-                                clis = Object.keys(configFile.templates);
+            function init() {
+                return _ref.apply(this, arguments);
+            }
 
-                                // read config.json keywords in rootPath
-                                // const selfKey = Object.keys(configFile.keywords);
-                                // selfKey.forEach(item => {
-                                //     this.keyword[item] = configFile.keywords[item];
-                                // });
+            return init;
+        }()
+    }, {
+        key: 'initCoreKeyword',
+        value: function () {
+            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+                var userFullname, _ref3, username, email;
 
-                                if (!headerParam) {
-                                    _context6.next = 28;
-                                    break;
-                                }
-
-                                if (!clis.includes(headerParam)) {
-                                    _context6.next = 24;
-                                    break;
-                                }
-
-                                innerConfigPath = this.tplPath + '/' + headerParam + '/config.json';
-                                _context6.next = 13;
-                                return common.validatePath(innerConfigPath, 'config.json', true);
-
-                            case 13:
-                                existInnerConfig = _context6.sent;
-
-                                if (!existInnerConfig) {
-                                    _context6.next = 22;
-                                    break;
-                                }
-
-                                _context6.next = 17;
-                                return fs.readFileSync(innerConfigPath, 'utf-8');
-
-                            case 17:
-                                innerConfig = _context6.sent;
-
-                                // match self-defining and build-in keywords
-                                innerConfig = innerConfig.replace(KEYWORD_REGEXP, function (value) {
-                                    return Parser.parse(value).output;
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                _context2.next = 2;
+                                return fullname().then(function (name) {
+                                    return Promise.resolve(name);
                                 });
 
-                                data = JSON.parse(innerConfig);
-                                // console.log(innerConfig);
+                            case 2:
+                                userFullname = _context2.sent;
+                                _context2.next = 5;
+                                return new Promise(function (resolve) {
+                                    simpleGit.raw(['config', '--list'], function (err, result) {
+                                        var gitConfig = {};
+                                        result.split('\n').forEach(function (item) {
+                                            var freg = item.split('=');
+                                            gitConfig[freg[0]] = freg[1];
+                                        });
+                                        return resolve({
+                                            username: gitConfig['user.name'],
+                                            email: gitConfig['user.email']
+                                        });
+                                    });
+                                });
 
-                                innerPath = this.tplPath + '/' + headerParam;
+                            case 5:
+                                _ref3 = _context2.sent;
+                                username = _ref3.username;
+                                email = _ref3.email;
 
-                                Object.keys(data.files).forEach(function () {
-                                    var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(item) {
-                                        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-                                            while (1) {
-                                                switch (_context2.prev = _context2.next) {
-                                                    case 0:
-                                                        _context2.next = 2;
-                                                        return _this2.copyFile(innerPath + '/' + item, DESTINATION_PATH + '/' + data.address + '/' + data.files[item].path);
 
-                                                    case 2:
-                                                        console.log(chalk.blue('new template') + ' : ' + chalk.green(data.files[item].path) + '');
+                                namespace.core = {
+                                    name: modalName,
+                                    fullname: userFullname,
+                                    username: username,
+                                    email: email,
+                                    datetime: util.getNow()
+                                };
 
-                                                    case 3:
-                                                    case 'end':
-                                                        return _context2.stop();
-                                                }
-                                            }
-                                        }, _callee2, _this2);
-                                    }));
+                            case 9:
+                            case 'end':
+                                return _context2.stop();
+                        }
+                    }
+                }, _callee2, this);
+            }));
 
-                                    return function (_x) {
-                                        return _ref4.apply(this, arguments);
-                                    };
-                                }());
+            function initCoreKeyword() {
+                return _ref2.apply(this, arguments);
+            }
 
-                            case 22:
-                                _context6.next = 26;
-                                break;
+            return initCoreKeyword;
+        }()
 
-                            case 24:
-                                console.log(headerParam + ' is not a valid cli!');
-                                return _context6.abrupt('return', Promise.reject());
+        /* Read Config file in rootPath */
 
-                            case 26:
-                                _context6.next = 29;
-                                break;
+    }, {
+        key: 'parseRootConfig',
+        value: function () {
+            var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+                var _this = this;
 
-                            case 28:
-                                // not find headerParam
-                                prompt([{
-                                    type: 'list',
-                                    name: 'param',
-                                    message: 'Which entity to build.',
-                                    choices: clis
-                                }]).then(function () {
-                                    var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(answers) {
-                                        return regeneratorRuntime.wrap(function _callee4$(_context4) {
-                                            while (1) {
-                                                switch (_context4.prev = _context4.next) {
-                                                    case 0:
-                                                        clis.some(function (item) {
-                                                            if (answers.param === item) {
-                                                                prompt([{
-                                                                    type: 'input',
-                                                                    name: 'name',
-                                                                    message: 'input a ' + item + ' name'
-                                                                }]).then(function () {
-                                                                    var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(answers) {
-                                                                        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-                                                                            while (1) {
-                                                                                switch (_context3.prev = _context3.next) {
-                                                                                    case 0:
-                                                                                        spawn(process.argv.slice(1)[0], [item, answers.name], { stdio: 'inherit' });
+                var rootConfigExist, rootConfigFile, rootConfigData;
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                _context4.next = 2;
+                                return fs.existsSync(this.rootConfig);
 
-                                                                                    case 1:
-                                                                                    case 'end':
-                                                                                        return _context3.stop();
-                                                                                }
-                                                                            }
-                                                                        }, _callee3, _this2);
-                                                                    }));
+                            case 2:
+                                rootConfigExist = _context4.sent;
 
-                                                                    return function (_x3) {
-                                                                        return _ref6.apply(this, arguments);
-                                                                    };
-                                                                }());
-                                                            }
-                                                        });
+                                if (!rootConfigExist) {
+                                    _context4.next = 10;
+                                    break;
+                                }
 
-                                                    case 1:
-                                                    case 'end':
-                                                        return _context4.stop();
-                                                }
-                                            }
-                                        }, _callee4, _this2);
-                                    }));
+                                _context4.next = 6;
+                                return fs.readFileSync(this.rootConfigPath, 'utf-8');
 
-                                    return function (_x2) {
-                                        return _ref5.apply(this, arguments);
-                                    };
-                                }());
+                            case 6:
+                                rootConfigFile = _context4.sent;
+                                rootConfigData = JSON.parse(rootConfigFile);
 
-                            case 29:
-                                _context6.next = 32;
-                                break;
+                                this.templates = Object.keys(rootConfigData.templates);
+                                return _context4.abrupt('return');
 
-                            case 31:
-                                // not find .tpl/config.js
-                                prompt([{
+                            case 10:
+
+                                // Not find config.js in root path.
+                                inquirer.prompt([{
                                     type: 'confirm',
                                     name: 'tpl',
                                     message: 'Sorry, not find config files root path. init that and continue?'
                                 }]).then(function () {
-                                    var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(answers) {
-                                        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                                    var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(answers) {
+                                        return regeneratorRuntime.wrap(function _callee3$(_context3) {
                                             while (1) {
-                                                switch (_context5.prev = _context5.next) {
+                                                switch (_context3.prev = _context3.next) {
                                                     case 0:
                                                         if (!answers.tpl) {
-                                                            _context5.next = 6;
+                                                            _context3.next = 6;
                                                             break;
                                                         }
 
-                                                        _context5.next = 3;
-                                                        return fse.mkdirsSync(_this2.rootConfig);
+                                                        _context3.next = 3;
+                                                        return fse.mkdirsSync(_this.rootConfig);
 
                                                     case 3:
-                                                        console.log('Config files build success!');
-                                                        _context5.next = 7;
+                                                        console.log('Success! A empty config files build in rootPath.');
+                                                        _context3.next = 7;
                                                         break;
 
                                                     case 6:
                                                         console.log('Bye.');
 
                                                     case 7:
+                                                        process.exit(0);
+
+                                                    case 8:
+                                                    case 'end':
+                                                        return _context3.stop();
+                                                }
+                                            }
+                                        }, _callee3, _this);
+                                    }));
+
+                                    return function (_x) {
+                                        return _ref5.apply(this, arguments);
+                                    };
+                                }());
+
+                            case 11:
+                            case 'end':
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
+            }));
+
+            function parseRootConfig() {
+                return _ref4.apply(this, arguments);
+            }
+
+            return parseRootConfig;
+        }()
+    }, {
+        key: 'parseEntityConfig',
+        value: function () {
+            var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+                var _this2 = this;
+
+                var innerConfigPath, innerConfigExist, innerConfig, data, innerPath;
+                return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                    while (1) {
+                        switch (_context8.prev = _context8.next) {
+                            case 0:
+                                if (!headerParam) {
+                                    _context8.next = 17;
+                                    break;
+                                }
+
+                                innerConfigPath = this.tplPath + '/' + headerParam + '/config.json';
+                                _context8.next = 4;
+                                return fs.existsSync(innerConfigPath);
+
+                            case 4:
+                                innerConfigExist = _context8.sent;
+
+                                if (this.templates.includes(headerParam)) {
+                                    _context8.next = 8;
+                                    break;
+                                }
+
+                                console.log(headerParam + ' is not a valid cli!');
+                                return _context8.abrupt('return');
+
+                            case 8:
+                                if (!innerConfigExist) {
+                                    _context8.next = 16;
+                                    break;
+                                }
+
+                                _context8.next = 11;
+                                return fs.readFileSync(innerConfigPath, 'utf-8');
+
+                            case 11:
+                                innerConfig = _context8.sent;
+
+                                // match self-defining and build-in keywords
+                                innerConfig = innerConfig.replace(KEYWORD_REGEXP, function (value) {
+                                    return Parser.parse(value).output;
+                                });
+                                data = JSON.parse(innerConfig);
+                                innerPath = this.tplPath + '/' + headerParam;
+
+                                Object.keys(data.files).forEach(function () {
+                                    var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(item) {
+                                        var obj, direction, pathDir, pathExist;
+                                        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                                            while (1) {
+                                                switch (_context5.prev = _context5.next) {
+                                                    case 0:
+                                                        obj = data.files[item];
+                                                        direction = DESTINATION_PATH + '/' + data.address + '/' + obj.path;
+                                                        pathDir = DESTINATION_PATH + '/' + data.address + '/' + obj.path;
+
+                                                        if (!obj.execute) {
+                                                            _context5.next = 11;
+                                                            break;
+                                                        }
+
+                                                        _context5.next = 6;
+                                                        return fs.existsSync(pathDir, 'utf-8');
+
+                                                    case 6:
+                                                        pathExist = _context5.sent;
+
+                                                        if (!pathExist) {
+                                                            _context5.next = 11;
+                                                            break;
+                                                        }
+
+                                                        _context5.next = 10;
+                                                        return _this2.echo2File(Parser.parse(obj.execute).output, pathDir, Parser.parse(obj.check).output);
+
+                                                    case 10:
+                                                        return _context5.abrupt('return');
+
+                                                    case 11:
+                                                        _context5.next = 13;
+                                                        return _this2.copyFile(innerPath + '/' + item, direction);
+
+                                                    case 13:
+                                                        console.log(chalk.blue('new template') + ' : ' + chalk.green(data.files[item].path) + '');
+
+                                                    case 14:
                                                     case 'end':
                                                         return _context5.stop();
                                                 }
@@ -311,75 +327,190 @@ var Core = function () {
                                         }, _callee5, _this2);
                                     }));
 
-                                    return function (_x4) {
+                                    return function (_x2) {
                                         return _ref7.apply(this, arguments);
                                     };
                                 }());
 
-                            case 32:
+                            case 16:
+                                return _context8.abrupt('return');
+
+                            case 17:
+
+                                // Not find headerParam
+                                inquirer.prompt([{
+                                    type: 'list',
+                                    name: 'param',
+                                    message: 'Which entity to build?',
+                                    choices: this.templates
+                                }]).then(function () {
+                                    var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(answers) {
+                                        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+                                            while (1) {
+                                                switch (_context7.prev = _context7.next) {
+                                                    case 0:
+                                                        _this2.templates.some(function (item) {
+                                                            if (answers.param === item) {
+                                                                inquirer.prompt([{
+                                                                    type: 'input',
+                                                                    name: 'name',
+                                                                    message: 'input a ' + item + ' name'
+                                                                }]).then(function () {
+                                                                    var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(answers) {
+                                                                        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+                                                                            while (1) {
+                                                                                switch (_context6.prev = _context6.next) {
+                                                                                    case 0:
+                                                                                        spawn(process.argv.slice(1)[0], [item, answers.name], { stdio: 'inherit' });
+
+                                                                                    case 1:
+                                                                                    case 'end':
+                                                                                        return _context6.stop();
+                                                                                }
+                                                                            }
+                                                                        }, _callee6, _this2);
+                                                                    }));
+
+                                                                    return function (_x4) {
+                                                                        return _ref9.apply(this, arguments);
+                                                                    };
+                                                                }());
+                                                            }
+                                                        });
+
+                                                    case 1:
+                                                    case 'end':
+                                                        return _context7.stop();
+                                                }
+                                            }
+                                        }, _callee7, _this2);
+                                    }));
+
+                                    return function (_x3) {
+                                        return _ref8.apply(this, arguments);
+                                    };
+                                }());
+
+                            case 18:
                             case 'end':
-                                return _context6.stop();
+                                return _context8.stop();
                         }
                     }
-                }, _callee6, this);
+                }, _callee8, this);
             }));
 
-            function init() {
-                return _ref3.apply(this, arguments);
+            function parseEntityConfig() {
+                return _ref6.apply(this, arguments);
             }
 
-            return init;
+            return parseEntityConfig;
         }()
     }, {
         key: 'copyFile',
         value: function () {
-            var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(from, to) {
-                var filter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+            var _ref10 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9(from, to) {
                 var data;
-                return regeneratorRuntime.wrap(function _callee7$(_context7) {
+                return regeneratorRuntime.wrap(function _callee9$(_context9) {
                     while (1) {
-                        switch (_context7.prev = _context7.next) {
+                        switch (_context9.prev = _context9.next) {
                             case 0:
-                                _context7.prev = 0;
-                                _context7.next = 3;
+                                _context9.prev = 0;
+                                _context9.next = 3;
                                 return readFile(from, 'utf-8');
 
                             case 3:
-                                data = _context7.sent;
+                                data = _context9.sent;
 
                                 data = data.replace(KEYWORD_REGEXP, function (value) {
                                     return Parser.parse(value).output;
                                 });
-                                _context7.next = 7;
+                                _context9.next = 7;
                                 return fse.outputFile(to, data);
 
                             case 7:
-                                _context7.next = 12;
+                                _context9.next = 12;
                                 break;
 
                             case 9:
-                                _context7.prev = 9;
-                                _context7.t0 = _context7['catch'](0);
+                                _context9.prev = 9;
+                                _context9.t0 = _context9['catch'](0);
 
-                                console.log(_context7.t0);
+                                console.log(_context9.t0);
 
                             case 12:
                             case 'end':
-                                return _context7.stop();
+                                return _context9.stop();
                         }
                     }
-                }, _callee7, this, [[0, 9]]);
+                }, _callee9, this, [[0, 9]]);
             }));
 
-            function copyFile(_x6, _x7) {
-                return _ref8.apply(this, arguments);
+            function copyFile(_x5, _x6) {
+                return _ref10.apply(this, arguments);
             }
 
             return copyFile;
+        }()
+    }, {
+        key: 'echo2File',
+        value: function () {
+            var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(string, dir, check) {
+                var data, array, flag, exist;
+                return regeneratorRuntime.wrap(function _callee10$(_context10) {
+                    while (1) {
+                        switch (_context10.prev = _context10.next) {
+                            case 0:
+                                _context10.prev = 0;
+                                _context10.next = 3;
+                                return readFile(dir, 'utf-8');
+
+                            case 3:
+                                data = _context10.sent;
+                                array = data.split('\n');
+                                flag = 0;
+                                exist = false;
+
+                                array.forEach(function (item, index) {
+                                    var match = /from/g.test(item);
+                                    exist = new RegExp(check, 'g').test(item) || exist;
+                                    if (match) {
+                                        flag = index;
+                                    }
+                                });
+                                !exist && array.splice(flag + 1, 0, string);
+
+                                _context10.next = 11;
+                                return fse.outputFile(dir, array.join('\n'));
+
+                            case 11:
+                                _context10.next = 16;
+                                break;
+
+                            case 13:
+                                _context10.prev = 13;
+                                _context10.t0 = _context10['catch'](0);
+
+                                console.log(_context10.t0);
+
+                            case 16:
+                            case 'end':
+                                return _context10.stop();
+                        }
+                    }
+                }, _callee10, this, [[0, 13]]);
+            }));
+
+            function echo2File(_x7, _x8, _x9) {
+                return _ref11.apply(this, arguments);
+            }
+
+            return echo2File;
         }()
     }]);
 
     return Core;
 }();
 
-module.exports = new Core();
+module.exports = function () {
+    return new Core();
+};
