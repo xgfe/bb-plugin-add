@@ -1,6 +1,6 @@
 # bb-plugin-add
 
-[![npm]](https://img.shields.io/npm/v/npm.svg)[![npm version](https://badge.fury.io/js/bb-plugin-add.svg)](https://badge.fury.io/js/bb-plugin-add)[![Build Status](https://travis-ci.org/xgfe/bb-plugin-add.svg?branch=master)](https://travis-ci.org/xgfe/bb-plugin-add)
+[![npm version]](https://img.shields.io/npm/v/npm.svg) [![npm version](https://badge.fury.io/js/bb-plugin-add.svg)](https://badge.fury.io/js/bb-plugin-add) [![Build Status](https://travis-ci.org/xgfe/bb-plugin-add.svg?branch=master)](https://travis-ci.org/xgfe/bb-plugin-add)
 
 A self-defining module generator plugin for bb-mt
 
@@ -62,13 +62,15 @@ You can use build-in keywords below:
 - `gitname`
   Username in git.
 - `email`
-  Email of git.
+   Email of git.
 
 ### Self-defining Keywords
 
 You can set up self-defining keywords in config.json
 
 ## Naming Standard
+
+- Function
 
 ## Build-in Functions
 

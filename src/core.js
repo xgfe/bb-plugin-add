@@ -110,6 +110,7 @@ class Core {
                     const obj = data.files[item];
                     const direction = DESTINATION_PATH + '/' + data.address + '/' + obj.path;
                     const pathDir = DESTINATION_PATH + '/' + data.address + '/' + obj.path;
+                    // if exist execute
                     if (obj.execute) {
                         let pathExist = await fs.existsSync(pathDir, 'utf-8');
                         if(pathExist) {

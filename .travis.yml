@@ -4,3 +4,4 @@ node_js:
   - v6
 script:
   - ./bin/index.js
+  - ./bin/index.js emptyModule

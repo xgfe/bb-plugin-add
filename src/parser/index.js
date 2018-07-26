@@ -23,6 +23,7 @@
  *
  *
  * */
+
 const PREFIX_CONTAINS = '>';
 const PREFIX_INCREASE = '+';
 const PREFIX_DECREASE = '-';
@@ -88,18 +89,18 @@ const fnMode = function (data, fn) {
         case FUNCTION_HEAD_LOWERCASE:
             return data[0].toLowerCase() + data.slice(1);
         case FUNCIION_GAP_HYPHEN:
-            return data.replace(/[A-Z]/g,function (value){
+            return data.replace(/[A-Z]/g, function (value) {
                 return '-' + value.toLowerCase();
             });
         case FUNCTION_GAP_UNDERSCORE:
-            return data.replace(/[A-Z]/g, function (value){
+            return data.replace(/[A-Z]/g, function (value) {
                 return '_' + value.toLowerCase();
             });
         case FUNCTION_EVAL:
         default:
             return data;
     }
-}
+};
 
 module.exports = {
     parse(string) {
@@ -112,11 +113,11 @@ module.exports = {
             core: ''
         };
 
-        _.core = string.slice(2,-1);
+        _.core = string.slice(2, -1);
 
-        if(/\([^\)]+\)/g.test(_.core)){
+        if (/\([^\)]+\)/g.test(_.core)) {
             // find () in value
-            _.output = _.core.match(/\([^\)]+\)/g)[0].slice(1,-1);
+            _.output = _.core.match(/\([^\)]+\)/g)[0].slice(1, -1);
         } else {
             _.output = _.core;
         }
@@ -129,41 +130,42 @@ module.exports = {
             all[item] = namespace.self[item];
         });
         Object.keys(all).some(item => {
-            if(item === _.output){
+            if (item === _.output) {
                 _.output = all[item];
                 return true;
             }
         });
 
-
         const hasFunction = FNS.some(item => _.core.indexOf(item) !== -1);
-        if(hasFunction){
-            const hasAddition = _.core.indexOf('*') !== -1;
 
-            if(!hasAddition){
-                FNS.some(fnItem => {
-                    if (_.core.indexOf(fnItem) !== -1) {
-                        _.output = fnMode(_.output, fnItem);
+        if (!hasFunction) {
+            return _;
+        }
+
+        const hasAddition = _.core.indexOf('*') !== -1;
+
+        if (!hasAddition) {
+            FNS.some(fnItem => {
+                if (_.core.indexOf(fnItem) !== -1) {
+                    _.output = fnMode(_.output, fnItem);
+                }
+            });
+        } else {
+            const fnList = [];
+            _.core.split('*').forEach(item => {
+                FNS.some(fn => {
+                    if (item.indexOf(fn) !== -1) {
+                        fnList.push(fn);
+                        return true;
                     }
                 });
-            }else{
-                const fnList = [];
-                _.core.split('*').forEach(item => {
-                    FNS.some(fn => {
-                        if(item.indexOf(fn) !== -1){
-                            fnList.push(fn);
-                            return true;
-                        }
-                    });
-                });
+            });
 
-                fnList.forEach(item => {
-                   _.output = fnMode(_.output, item);
-                });
-            }
+            fnList.forEach(item => {
+                _.output = fnMode(_.output, item);
+            });
         }
 
         return _;
-
     }
 };
