@@ -171,9 +171,8 @@ var Core = function () {
                                 return _context4.abrupt('return');
 
                             case 10:
-
-                                // Not find config.js in root path.
-                                inquirer.prompt([{
+                                _context4.next = 12;
+                                return prompt([{
                                     type: 'confirm',
                                     name: 'tpl',
                                     message: 'Sorry, not find config files root path. init that and continue?'
@@ -215,7 +214,7 @@ var Core = function () {
                                     };
                                 }());
 
-                            case 11:
+                            case 12:
                             case 'end':
                                 return _context4.stop();
                         }
@@ -281,17 +280,18 @@ var Core = function () {
 
                                 Object.keys(data.files).forEach(function () {
                                     var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(item) {
-                                        var obj, direction, pathDir, pathExist;
+                                        var obj, direction, pathDir, pathExist, execute;
                                         return regeneratorRuntime.wrap(function _callee5$(_context5) {
                                             while (1) {
                                                 switch (_context5.prev = _context5.next) {
                                                     case 0:
                                                         obj = data.files[item];
-                                                        direction = DESTINATION_PATH + '/' + data.address + '/' + obj.path;
-                                                        pathDir = DESTINATION_PATH + '/' + data.address + '/' + obj.path;
+                                                        direction = DESTINATION_PATH + '/' + data.address + obj.path;
+                                                        pathDir = DESTINATION_PATH + '/' + data.address + obj.path;
+                                                        // if exist execute
 
                                                         if (!obj.execute) {
-                                                            _context5.next = 11;
+                                                            _context5.next = 12;
                                                             break;
                                                         }
 
@@ -302,24 +302,27 @@ var Core = function () {
                                                         pathExist = _context5.sent;
 
                                                         if (!pathExist) {
-                                                            _context5.next = 11;
+                                                            _context5.next = 12;
                                                             break;
                                                         }
 
-                                                        _context5.next = 10;
-                                                        return _this2.echo2File(Parser.parse(obj.execute).output, pathDir, Parser.parse(obj.check).output);
-
-                                                    case 10:
-                                                        return _context5.abrupt('return');
+                                                        execute = obj.execute.replace(KEYWORD_REGEXP, function () {
+                                                            return Parser.parse(value).output;
+                                                        });
+                                                        _context5.next = 11;
+                                                        return _this2.echo2File(execute, pathDir);
 
                                                     case 11:
-                                                        _context5.next = 13;
+                                                        return _context5.abrupt('return');
+
+                                                    case 12:
+                                                        _context5.next = 14;
                                                         return _this2.copyFile(innerPath + '/' + item, direction);
 
-                                                    case 13:
-                                                        console.log(chalk.blue('new template') + ' : ' + chalk.green(data.files[item].path) + '');
-
                                                     case 14:
+                                                        console.log(chalk.green('[new template]') + ':' + data.files[item].path);
+
+                                                    case 15:
                                                     case 'end':
                                                         return _context5.stop();
                                                 }
@@ -336,12 +339,11 @@ var Core = function () {
                                 return _context8.abrupt('return');
 
                             case 17:
-
-                                // Not find headerParam
-                                inquirer.prompt([{
+                                _context8.next = 19;
+                                return prompt([{
                                     type: 'list',
                                     name: 'param',
-                                    message: 'Which entity to build?',
+                                    message: 'Choice an Entity to build.',
                                     choices: this.templates
                                 }]).then(function () {
                                     var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(answers) {
@@ -351,10 +353,10 @@ var Core = function () {
                                                     case 0:
                                                         _this2.templates.some(function (item) {
                                                             if (answers.param === item) {
-                                                                inquirer.prompt([{
+                                                                prompt([{
                                                                     type: 'input',
                                                                     name: 'name',
-                                                                    message: 'input a ' + item + ' name'
+                                                                    message: 'Enter a ' + item + ' name.'
                                                                 }]).then(function () {
                                                                     var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(answers) {
                                                                         return regeneratorRuntime.wrap(function _callee6$(_context6) {
@@ -391,7 +393,7 @@ var Core = function () {
                                     };
                                 }());
 
-                            case 18:
+                            case 19:
                             case 'end':
                                 return _context8.stop();
                         }
@@ -454,8 +456,8 @@ var Core = function () {
     }, {
         key: 'echo2File',
         value: function () {
-            var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(string, dir, check) {
-                var data, array, flag, exist;
+            var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(string, dir) {
+                var data, array, flag;
                 return regeneratorRuntime.wrap(function _callee10$(_context10) {
                     while (1) {
                         switch (_context10.prev = _context10.next) {
@@ -467,40 +469,32 @@ var Core = function () {
                             case 3:
                                 data = _context10.sent;
                                 array = data.split('\n');
-                                flag = 0;
-                                exist = false;
+                                flag = array.length;
 
-                                array.forEach(function (item, index) {
-                                    var match = /from/g.test(item);
-                                    exist = new RegExp(check, 'g').test(item) || exist;
-                                    if (match) {
-                                        flag = index;
-                                    }
-                                });
-                                !exist && array.splice(flag + 1, 0, string);
+                                array.splice(flag, 0, string);
 
-                                _context10.next = 11;
+                                _context10.next = 9;
                                 return fse.outputFile(dir, array.join('\n'));
 
-                            case 11:
-                                _context10.next = 16;
+                            case 9:
+                                _context10.next = 14;
                                 break;
 
-                            case 13:
-                                _context10.prev = 13;
+                            case 11:
+                                _context10.prev = 11;
                                 _context10.t0 = _context10['catch'](0);
 
                                 console.log(_context10.t0);
 
-                            case 16:
+                            case 14:
                             case 'end':
                                 return _context10.stop();
                         }
                     }
-                }, _callee10, this, [[0, 13]]);
+                }, _callee10, this, [[0, 11]]);
             }));
 
-            function echo2File(_x7, _x8, _x9) {
+            function echo2File(_x7, _x8) {
                 return _ref11.apply(this, arguments);
             }
 

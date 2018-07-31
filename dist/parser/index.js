@@ -25,6 +25,7 @@
  *
  *
  * */
+
 var PREFIX_CONTAINS = '>';
 var PREFIX_INCREASE = '+';
 var PREFIX_DECREASE = '-';
@@ -77,6 +78,11 @@ var fnMode = function fnMode(data, fn) {
             return data.replace(/[A-Z]/g, function (value) {
                 return '_' + value.toLowerCase();
             });
+        case FUNCTION_CSS_CLASS_HYPHEN_STYLE:
+            var str = data[0].toLowerCase() + data.slice(1);
+            return str.replace(/[A-Z]/g, function (value) {
+                return '-' + value.toLowerCase();
+            });
         case FUNCTION_EVAL:
         default:
             return data;
@@ -120,30 +126,33 @@ module.exports = {
         var hasFunction = FNS.some(function (item) {
             return _.core.indexOf(item) !== -1;
         });
-        if (hasFunction) {
-            var hasAddition = _.core.indexOf('*') !== -1;
 
-            if (!hasAddition) {
-                FNS.some(function (fnItem) {
-                    if (_.core.indexOf(fnItem) !== -1) {
-                        _.output = fnMode(_.output, fnItem);
+        if (!hasFunction) {
+            return _;
+        }
+
+        var hasAddition = _.core.indexOf('*') !== -1;
+
+        if (!hasAddition) {
+            FNS.some(function (fnItem) {
+                if (_.core.indexOf(fnItem) !== -1) {
+                    _.output = fnMode(_.output, fnItem);
+                }
+            });
+        } else {
+            var fnList = [];
+            _.core.split('*').forEach(function (item) {
+                FNS.some(function (fn) {
+                    if (item.indexOf(fn) !== -1) {
+                        fnList.push(fn);
+                        return true;
                     }
                 });
-            } else {
-                var fnList = [];
-                _.core.split('*').forEach(function (item) {
-                    FNS.some(function (fn) {
-                        if (item.indexOf(fn) !== -1) {
-                            fnList.push(fn);
-                            return true;
-                        }
-                    });
-                });
+            });
 
-                fnList.forEach(function (item) {
-                    _.output = fnMode(_.output, item);
-                });
-            }
+            fnList.forEach(function (item) {
+                _.output = fnMode(_.output, item);
+            });
         }
 
         return _;
