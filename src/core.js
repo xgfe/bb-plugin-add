@@ -73,7 +73,7 @@ class Core {
         }
 
         // Not find config.js in root path.
-        inquirer.prompt([{
+        await prompt([{
             type: 'confirm',
             name: 'tpl',
             message: 'Sorry, not find config files root path. init that and continue?'
@@ -108,40 +108,42 @@ class Core {
                 const innerPath = this.tplPath + '/' + headerParam;
                 Object.keys(data.files).forEach(async item => {
                     const obj = data.files[item];
-                    const direction = DESTINATION_PATH + '/' + data.address + '/' + obj.path;
-                    const pathDir = DESTINATION_PATH + '/' + data.address + '/' + obj.path;
+                    const direction = DESTINATION_PATH + '/' + data.address + obj.path;
+                    const pathDir = DESTINATION_PATH + '/' + data.address + obj.path;
                     // if exist execute
                     if (obj.execute) {
                         let pathExist = await fs.existsSync(pathDir, 'utf-8');
                         if(pathExist) {
+                            const execute = obj.execute.replace(KEYWORD_REGEXP, function (){
+                               return Parser.parse(value).output;
+                            });
                             await this.echo2File(
-                                Parser.parse(obj.execute).output,
-                                pathDir,
-                                Parser.parse(obj.check).output
+                                execute,
+                                pathDir
                             );
                             return;
                         }
                     }
                     await this.copyFile(innerPath + '/' + item, direction);
-                    console.log(chalk.blue('new template') + ' : ' + chalk.green(data.files[item].path) + '');
+                    console.log(chalk.green('[new template]') + ':' + data.files[item].path);
                 });
             }
             return;
         }
 
         // Not find headerParam
-        inquirer.prompt([{
+        await prompt([{
             type: 'list',
             name: 'param',
-            message: '🤔 Which entity to build?',
+            message: 'Choice an Entity to build.',
             choices: this.templates
         }]).then(async answers => {
             this.templates.some(item => {
                 if (answers.param === item) {
-                    inquirer.prompt([{
+                    prompt([{
                         type: 'input',
                         name: 'name',
-                        message: 'input a ' + item + ' name'
+                        message: 'Enter a ' + item + ' name.'
                     }]).then(async answers => {
                         spawn(process.argv.slice(1)[0], [item, answers.name], {stdio: 'inherit'});
                     });
@@ -162,20 +164,12 @@ class Core {
         }
     }
 
-    async echo2File(string, dir, check) {
+    async echo2File(string, dir) {
         try {
             const data = await readFile(dir, 'utf-8');
             let array = data.split('\n');
-            let flag = 0;
-            let exist = false;
-            array.forEach((item, index) => {
-                const match = /from/g.test(item);
-                exist = new RegExp(check, 'g').test(item) || exist;
-                if (match) {
-                    flag = index;
-                }
-            });
-            !exist && array.splice(flag + 1, 0, string);
+            let flag = array.length;
+            array.splice(flag, 0, string);
 
             await fse.outputFile(dir, array.join('\n'));
 

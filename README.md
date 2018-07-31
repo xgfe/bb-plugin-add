@@ -1,6 +1,6 @@
 # bb-plugin-add
 
-[![npm version]](https://img.shields.io/npm/v/npm.svg) [![npm version](https://badge.fury.io/js/bb-plugin-add.svg)](https://badge.fury.io/js/bb-plugin-add) [![Build Status](https://travis-ci.org/xgfe/bb-plugin-add.svg?branch=master)](https://travis-ci.org/xgfe/bb-plugin-add)
+[![npm version](https://badge.fury.io/js/bb-plugin-add.svg)](https://badge.fury.io/js/bb-plugin-add) [![Build Status](https://travis-ci.org/xgfe/bb-plugin-add.svg?branch=master)](https://travis-ci.org/xgfe/bb-plugin-add)
 
 A self-defining module generator plugin for bb-mt
 
@@ -40,6 +40,12 @@ $ mkdir my-component && cd my-component
 Execute cli: bb add my-component test.
 
 Now, a folder named test with test.vue exist in root path.
+
+## Usage
+
+```
+bb add component CsuDetail
+```
 
 ## Keywords
 

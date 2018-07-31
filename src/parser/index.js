@@ -96,6 +96,11 @@ const fnMode = function (data, fn) {
             return data.replace(/[A-Z]/g, function (value) {
                 return '_' + value.toLowerCase();
             });
+        case FUNCTION_CSS_CLASS_HYPHEN_STYLE:
+            let str = data[0].toLowerCase() + data.slice(1);
+            return str.replace(/[A-Z]/g, function (value) {
+                return '-' + value.toLowerCase();
+            });
         case FUNCTION_EVAL:
         default:
             return data;
