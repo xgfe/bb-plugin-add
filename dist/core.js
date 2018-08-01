@@ -96,6 +96,10 @@ var Core = function () {
                                 return new Promise(function (resolve) {
                                     simpleGit.raw(['config', '--list'], function (err, result) {
                                         var gitConfig = {};
+                                        if (!result) {
+                                            return;
+                                        }
+
                                         result.split('\n').forEach(function (item) {
                                             var freg = item.split('=');
                                             gitConfig[freg[0]] = freg[1];

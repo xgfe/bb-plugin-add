@@ -41,6 +41,10 @@ class Core {
         const {username, email} = await new Promise(resolve => {
             simpleGit.raw(['config', '--list'], (err, result) => {
                 let gitConfig = {};
+                if(!result) {
+                    return;
+                }
+
                 result.split('\n').forEach(item => {
                     const freg = item.split('=');
                     gitConfig[freg[0]] = freg[1];

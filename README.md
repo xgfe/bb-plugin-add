@@ -9,7 +9,6 @@ A self-defining module generator plugin for bb-mt
 First, you should install bb and this plugin:
 ```sh
 $ npm install -g bb-mt bb-plugin-add
-
 ```
 Next, create your own project folder and run init:
 ```sh
@@ -31,27 +30,17 @@ Then, create config.json:
 }
 ```
 
-create some template files:
-```sh
-$ mkdir my-component && cd my-component
-# my-template.vue
-```
-
-Execute cli: bb add my-component test.
-
-Now, a folder named test with test.vue exist in root path.
-
 ## Usage
 
 ```
-bb add component CsuDetail
+bb add component MyComponent
 ```
 
 ## Keywords
 
 ```sh
-# for example, edit template file like this
-# project name is ${name}
+# For example, edit template file like this
+# Entity name is ${name}
 export { default as ${name}} from "${name}"
 ```
 
@@ -60,7 +49,7 @@ export { default as ${name}} from "${name}"
 You can use build-in keywords below:
 
 - `name`
-  Name user input.
+  Your entity name.
 - `datetime`
   Datetime in os.
 - `fullname`
@@ -74,20 +63,19 @@ You can use build-in keywords below:
 
 You can set up self-defining keywords in config.json
 
-## Naming Standard
-
-- Function
-
 ## Build-in Functions
 
-- UPPERCASE
-- LOWERCASE
-- HASH
-- HEAD_UPPER
-- HEAD_LOWER
-- GAP_HYPHEN
-- GAP_UNDERSCORE
-- CSS_CLASS_HYPHEN_STYLE
+- `UPPERCASE`  MyComponent  -  MYCOMPONENT
+- `LOWERCASE`  MyComponent  -  mycomponent
+- `HEAD_UPPER`  myComponent  -  MyComponent
+- `HEAD_LOWER`  MyComponent  -  myComponent
+- `GAP_HYPHEN`  MyComponent  -  -my-component
+- `GAP_UNDERSCORE`  MyComponent  -  _my_component
+- `CSS_CLASS_HYPHEN_STYLE`  MyComponent  -  my-component
+
+## Thanks
+
+@feyy
 
 ## License
 
