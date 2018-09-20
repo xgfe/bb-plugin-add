@@ -23,9 +23,10 @@ var _require = require('child_process'),
 var util = require('./util');
 var namespace = require('./namespace');
 var Parser = require('./parser');
+var Pragma = require('./pragma');
 
 var DESTINATION_PATH = process.cwd();
-var headerParam = process.argv.slice(2)[0] || null;
+var entityName = process.argv.slice(2)[0] || null;
 var modalName = process.argv.slice(3)[0] || null;
 
 // ${} match keyword
@@ -140,7 +141,7 @@ var Core = function () {
             return initCoreKeyword;
         }()
 
-        /* Read Config file in rootPath */
+        /* Read config file in root path */
 
     }, {
         key: 'parseRootConfig',
@@ -235,52 +236,65 @@ var Core = function () {
     }, {
         key: 'parseEntityConfig',
         value: function () {
-            var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+            var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
                 var _this2 = this;
 
-                var innerConfigPath, innerConfigExist, innerConfig, data, innerPath;
-                return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                var innerConfigPath, innerConfigExist, innerConfig, data, innerPath, flag;
+                return regeneratorRuntime.wrap(function _callee6$(_context6) {
                     while (1) {
-                        switch (_context8.prev = _context8.next) {
+                        switch (_context6.prev = _context6.next) {
                             case 0:
-                                if (!headerParam) {
-                                    _context8.next = 17;
+                                if (entityName) {
+                                    _context6.next = 4;
                                     break;
                                 }
 
-                                innerConfigPath = this.tplPath + '/' + headerParam + '/config.json';
-                                _context8.next = 4;
-                                return fs.existsSync(innerConfigPath);
+                                _context6.next = 3;
+                                return this.notEnterEntityName();
+
+                            case 3:
+                                return _context6.abrupt('return');
 
                             case 4:
-                                innerConfigExist = _context8.sent;
-
-                                if (this.templates.includes(headerParam)) {
-                                    _context8.next = 8;
+                                if (this.templates.includes(entityName)) {
+                                    _context6.next = 7;
                                     break;
                                 }
 
-                                console.log(headerParam + ' is not a valid cli!');
-                                return _context8.abrupt('return');
+                                console.log(entityName + ' is not a valid cli!');
+                                return _context6.abrupt('return');
 
-                            case 8:
-                                if (!innerConfigExist) {
-                                    _context8.next = 16;
+                            case 7:
+                                innerConfigPath = this.tplPath + '/' + entityName + '/config.json';
+                                _context6.next = 10;
+                                return fs.existsSync(innerConfigPath);
+
+                            case 10:
+                                innerConfigExist = _context6.sent;
+
+                                if (innerConfigExist) {
+                                    _context6.next = 14;
                                     break;
                                 }
 
-                                _context8.next = 11;
+                                console.log('config.json of ' + entityName + ' is not exist!');
+                                return _context6.abrupt('return');
+
+                            case 14:
+                                _context6.next = 16;
                                 return fs.readFileSync(innerConfigPath, 'utf-8');
 
-                            case 11:
-                                innerConfig = _context8.sent;
+                            case 16:
+                                innerConfig = _context6.sent;
 
                                 // match self-defining and build-in keywords
                                 innerConfig = innerConfig.replace(KEYWORD_REGEXP, function (value) {
                                     return Parser.parse(value).output;
                                 });
                                 data = JSON.parse(innerConfig);
-                                innerPath = this.tplPath + '/' + headerParam;
+                                innerPath = this.tplPath + '/' + entityName;
+                                flag = 0;
+
 
                                 Object.keys(data.files).forEach(function () {
                                     var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(item) {
@@ -324,9 +338,13 @@ var Core = function () {
                                                         return _this2.copyFile(innerPath + '/' + item, direction);
 
                                                     case 14:
-                                                        console.log(chalk.green('[new template]') + ':' + data.files[item].path);
+                                                        if (flag === 0) {
+                                                            console.log(chalk.green('[new template]:'));
+                                                            flag++;
+                                                        }
+                                                        console.log(' - ' + data.files[item].path);
 
-                                                    case 15:
+                                                    case 16:
                                                     case 'end':
                                                         return _context5.stop();
                                                 }
@@ -339,70 +357,12 @@ var Core = function () {
                                     };
                                 }());
 
-                            case 16:
-                                return _context8.abrupt('return');
-
-                            case 17:
-                                _context8.next = 19;
-                                return prompt([{
-                                    type: 'list',
-                                    name: 'param',
-                                    message: 'Choice an Entity to build.',
-                                    choices: this.templates
-                                }]).then(function () {
-                                    var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(answers) {
-                                        return regeneratorRuntime.wrap(function _callee7$(_context7) {
-                                            while (1) {
-                                                switch (_context7.prev = _context7.next) {
-                                                    case 0:
-                                                        _this2.templates.some(function (item) {
-                                                            if (answers.param === item) {
-                                                                prompt([{
-                                                                    type: 'input',
-                                                                    name: 'name',
-                                                                    message: 'Enter a ' + item + ' name.'
-                                                                }]).then(function () {
-                                                                    var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(answers) {
-                                                                        return regeneratorRuntime.wrap(function _callee6$(_context6) {
-                                                                            while (1) {
-                                                                                switch (_context6.prev = _context6.next) {
-                                                                                    case 0:
-                                                                                        spawn(process.argv.slice(1)[0], [item, answers.name], { stdio: 'inherit' });
-
-                                                                                    case 1:
-                                                                                    case 'end':
-                                                                                        return _context6.stop();
-                                                                                }
-                                                                            }
-                                                                        }, _callee6, _this2);
-                                                                    }));
-
-                                                                    return function (_x4) {
-                                                                        return _ref9.apply(this, arguments);
-                                                                    };
-                                                                }());
-                                                            }
-                                                        });
-
-                                                    case 1:
-                                                    case 'end':
-                                                        return _context7.stop();
-                                                }
-                                            }
-                                        }, _callee7, _this2);
-                                    }));
-
-                                    return function (_x3) {
-                                        return _ref8.apply(this, arguments);
-                                    };
-                                }());
-
-                            case 19:
+                            case 22:
                             case 'end':
-                                return _context8.stop();
+                                return _context6.stop();
                         }
                     }
-                }, _callee8, this);
+                }, _callee6, this);
             }));
 
             function parseEntityConfig() {
@@ -412,94 +372,180 @@ var Core = function () {
             return parseEntityConfig;
         }()
     }, {
-        key: 'copyFile',
+        key: 'notEnterEntityName',
         value: function () {
-            var _ref10 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9(from, to) {
-                var data;
+            var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
+                var _this3 = this;
+
                 return regeneratorRuntime.wrap(function _callee9$(_context9) {
                     while (1) {
                         switch (_context9.prev = _context9.next) {
                             case 0:
-                                _context9.prev = 0;
-                                _context9.next = 3;
-                                return readFile(from, 'utf-8');
+                                _context9.next = 2;
+                                return prompt([{
+                                    type: 'list',
+                                    name: 'param',
+                                    message: 'Choice an Entity to build.',
+                                    choices: this.templates
+                                }]).then(function () {
+                                    var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8(answers) {
+                                        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                                            while (1) {
+                                                switch (_context8.prev = _context8.next) {
+                                                    case 0:
+                                                        _this3.templates.some(function (item) {
+                                                            if (answers.param === item) {
+                                                                prompt([{
+                                                                    type: 'input',
+                                                                    name: 'name',
+                                                                    message: 'Enter a ' + item + ' name.'
+                                                                }]).then(function () {
+                                                                    var _ref10 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(answers) {
+                                                                        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+                                                                            while (1) {
+                                                                                switch (_context7.prev = _context7.next) {
+                                                                                    case 0:
+                                                                                        spawn(process.argv.slice(1)[0], [item, answers.name], { stdio: 'inherit' });
 
-                            case 3:
-                                data = _context9.sent;
+                                                                                    case 1:
+                                                                                    case 'end':
+                                                                                        return _context7.stop();
+                                                                                }
+                                                                            }
+                                                                        }, _callee7, _this3);
+                                                                    }));
 
-                                data = data.replace(KEYWORD_REGEXP, function (value) {
-                                    return Parser.parse(value).output;
-                                });
-                                _context9.next = 7;
-                                return fse.outputFile(to, data);
+                                                                    return function (_x4) {
+                                                                        return _ref10.apply(this, arguments);
+                                                                    };
+                                                                }());
+                                                            }
+                                                        });
 
-                            case 7:
-                                _context9.next = 12;
-                                break;
+                                                    case 1:
+                                                    case 'end':
+                                                        return _context8.stop();
+                                                }
+                                            }
+                                        }, _callee8, _this3);
+                                    }));
 
-                            case 9:
-                                _context9.prev = 9;
-                                _context9.t0 = _context9['catch'](0);
+                                    return function (_x3) {
+                                        return _ref9.apply(this, arguments);
+                                    };
+                                }());
 
-                                console.log(_context9.t0);
-
-                            case 12:
+                            case 2:
                             case 'end':
                                 return _context9.stop();
                         }
                     }
-                }, _callee9, this, [[0, 9]]);
+                }, _callee9, this);
             }));
 
-            function copyFile(_x5, _x6) {
-                return _ref10.apply(this, arguments);
+            function notEnterEntityName() {
+                return _ref8.apply(this, arguments);
             }
 
-            return copyFile;
+            return notEnterEntityName;
         }()
     }, {
-        key: 'echo2File',
+        key: 'copyFile',
         value: function () {
-            var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(string, dir) {
-                var data, array, flag;
+            var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10(from, to) {
+                var data;
                 return regeneratorRuntime.wrap(function _callee10$(_context10) {
                     while (1) {
                         switch (_context10.prev = _context10.next) {
                             case 0:
                                 _context10.prev = 0;
                                 _context10.next = 3;
-                                return readFile(dir, 'utf-8');
+                                return readFile(from, 'utf-8');
 
                             case 3:
                                 data = _context10.sent;
-                                array = data.split('\n');
-                                flag = array.length;
 
-                                array.splice(flag, 0, string);
+                                data = data.replace(KEYWORD_REGEXP, function (value) {
+                                    return Parser.parse(value).output;
+                                });
+                                _context10.next = 7;
+                                return fse.outputFile(to, data);
 
-                                _context10.next = 9;
-                                return fse.outputFile(dir, array.join('\n'));
-
-                            case 9:
-                                _context10.next = 14;
+                            case 7:
+                                _context10.next = 12;
                                 break;
 
-                            case 11:
-                                _context10.prev = 11;
+                            case 9:
+                                _context10.prev = 9;
                                 _context10.t0 = _context10['catch'](0);
 
                                 console.log(_context10.t0);
 
-                            case 14:
+                            case 12:
                             case 'end':
                                 return _context10.stop();
                         }
                     }
-                }, _callee10, this, [[0, 11]]);
+                }, _callee10, this, [[0, 9]]);
+            }));
+
+            function copyFile(_x5, _x6) {
+                return _ref11.apply(this, arguments);
+            }
+
+            return copyFile;
+        }()
+        /*
+        * Add a string into file
+        * */
+
+    }, {
+        key: 'echo2File',
+        value: function () {
+            var _ref12 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee11(string, dir) {
+                var data;
+                return regeneratorRuntime.wrap(function _callee11$(_context11) {
+                    while (1) {
+                        switch (_context11.prev = _context11.next) {
+                            case 0:
+                                _context11.prev = 0;
+                                _context11.next = 3;
+                                return readFile(dir, 'utf-8');
+
+                            case 3:
+                                data = _context11.sent;
+
+                                // todo: update regex matching
+                                data = data.replace(/\/\*([\S\s]*?)\*\//gm, function (value) {
+                                    if (value.indexOf('@bb-pragma add') !== -1) {
+                                        return string + '\n' + value;
+                                    }
+                                    return value;
+                                });
+
+                                _context11.next = 7;
+                                return fse.outputFile(dir, data);
+
+                            case 7:
+                                _context11.next = 12;
+                                break;
+
+                            case 9:
+                                _context11.prev = 9;
+                                _context11.t0 = _context11['catch'](0);
+
+                                console.log(_context11.t0);
+
+                            case 12:
+                            case 'end':
+                                return _context11.stop();
+                        }
+                    }
+                }, _callee11, this, [[0, 9]]);
             }));
 
             function echo2File(_x7, _x8) {
-                return _ref11.apply(this, arguments);
+                return _ref12.apply(this, arguments);
             }
 
             return echo2File;

@@ -12,9 +12,10 @@ const {spawn} = require('child_process');
 const util = require('./util');
 const namespace = require('./namespace');
 const Parser = require('./parser');
+const Pragma = require('./pragma');
 
 const DESTINATION_PATH = process.cwd();
-const headerParam = process.argv.slice(2)[0] || null;
+const entityName = process.argv.slice(2)[0] || null;
 const modalName = process.argv.slice(3)[0] || null;
 
 // ${} match keyword
@@ -41,7 +42,7 @@ class Core {
         const {username, email} = await new Promise(resolve => {
             simpleGit.raw(['config', '--list'], (err, result) => {
                 let gitConfig = {};
-                if(!result) {
+                if (!result) {
                     return;
                 }
 
@@ -65,7 +66,7 @@ class Core {
         };
     }
 
-    /* Read Config file in rootPath */
+    /* Read config file in root path */
     async parseRootConfig() {
         const rootConfigExist = await fs.existsSync(this.rootConfig);
 
@@ -93,49 +94,64 @@ class Core {
     }
 
     async parseEntityConfig() {
-        if (headerParam) {
-            const innerConfigPath = this.tplPath + '/' + headerParam + '/config.json';
-            const innerConfigExist = await fs.existsSync(innerConfigPath);
-
-            if (!this.templates.includes(headerParam)) {
-                console.log(headerParam + ' is not a valid cli!');
-                return;
-            }
-            // if config.js exist
-            if (innerConfigExist) {
-                let innerConfig = await fs.readFileSync(innerConfigPath, 'utf-8');
-                // match self-defining and build-in keywords
-                innerConfig = innerConfig.replace(KEYWORD_REGEXP, function (value) {
-                    return Parser.parse(value).output;
-                });
-                const data = JSON.parse(innerConfig);
-                const innerPath = this.tplPath + '/' + headerParam;
-                Object.keys(data.files).forEach(async item => {
-                    const obj = data.files[item];
-                    const direction = DESTINATION_PATH + '/' + data.address + obj.path;
-                    const pathDir = DESTINATION_PATH + '/' + data.address + obj.path;
-                    // if exist execute
-                    if (obj.execute) {
-                        let pathExist = await fs.existsSync(pathDir, 'utf-8');
-                        if(pathExist) {
-                            const execute = obj.execute.replace(KEYWORD_REGEXP, function (){
-                               return Parser.parse(value).output;
-                            });
-                            await this.echo2File(
-                                execute,
-                                pathDir
-                            );
-                            return;
-                        }
-                    }
-                    await this.copyFile(innerPath + '/' + item, direction);
-                    console.log(chalk.green('[new template]') + ':' + data.files[item].path);
-                });
-            }
+        if (!entityName) {
+            await this.notEnterEntityName();
             return;
         }
 
-        // Not find headerParam
+        if (!this.templates.includes(entityName)) {
+            console.log(entityName + ' is not a valid cli!');
+            return;
+        }
+
+        const innerConfigPath = this.tplPath + '/' + entityName + '/config.json';
+        const innerConfigExist = await fs.existsSync(innerConfigPath);
+
+        // if config.json exist
+        if (!innerConfigExist) {
+            console.log('config.json of ' + entityName + ' is not exist!');
+            return;
+        }
+
+        let innerConfig = await fs.readFileSync(innerConfigPath, 'utf-8');
+        // match self-defining and build-in keywords
+        innerConfig = innerConfig.replace(KEYWORD_REGEXP, function (value) {
+            return Parser.parse(value).output;
+        });
+        const data = JSON.parse(innerConfig);
+        const innerPath = this.tplPath + '/' + entityName;
+
+        let flag = 0;
+
+        Object.keys(data.files).forEach(async item => {
+            const obj = data.files[item];
+            const direction = DESTINATION_PATH + '/' + data.address + obj.path;
+            const pathDir = DESTINATION_PATH + '/' + data.address + obj.path;
+            // if exist execute
+            if (obj.execute) {
+                let pathExist = await fs.existsSync(pathDir, 'utf-8');
+                if (pathExist) {
+                    const execute = obj.execute.replace(KEYWORD_REGEXP, function () {
+                        return Parser.parse(value).output;
+                    });
+                    await this.echo2File(
+                        execute,
+                        pathDir
+                    );
+                    return;
+                }
+            }
+            await this.copyFile(innerPath + '/' + item, direction);
+            if(flag === 0) {
+                console.log(chalk.green('[new template]:'));
+                flag++;
+            }
+            console.log(' - ' + data.files[item].path);
+        });
+    }
+
+    async notEnterEntityName() {
+        // Not enter entity name
         await prompt([{
             type: 'list',
             name: 'param',
@@ -167,15 +183,21 @@ class Core {
             console.log(e)
         }
     }
-
+    /*
+    * Add a string into file
+    * */
     async echo2File(string, dir) {
         try {
-            const data = await readFile(dir, 'utf-8');
-            let array = data.split('\n');
-            let flag = array.length;
-            array.splice(flag, 0, string);
+            let data = await readFile(dir, 'utf-8');
+            // todo: update regex matching
+            data = data.replace(/\/\*([\S\s]*?)\*\//gm, function (value){
+                if(value.indexOf('@bb-pragma add') !== -1) {
+                    return string + '\n' + value;
+                }
+                return value;
+            });
 
-            await fse.outputFile(dir, array.join('\n'));
+            await fse.outputFile(dir, data);
 
         } catch (e) {
             console.log(e)
