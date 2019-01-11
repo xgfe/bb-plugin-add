@@ -107,70 +107,75 @@ const fnMode = function (data, fn) {
     }
 };
 
-module.exports = {
-    parse(string) {
-        let _ = {
-            mode: '',
-            range: '',
-            fn: '',
-            data: '',
-            output: '',
-            core: ''
-        };
+export const convertKeyword = function (content) {
+  return content.replace(KEYWORD_REGEXP, function (value) {
+    return parse(value).output;
+  });
+};
 
-        _.core = string.slice(2, -1);
+export const parse = function (string) {
+    let _ = {
+        mode: '',
+        range: '',
+        fn: '',
+        data: '',
+        output: '',
+        core: ''
+    };
 
-        if (/\([^\)]+\)/g.test(_.core)) {
-            // find () in value
-            _.output = _.core.match(/\([^\)]+\)/g)[0].slice(1, -1);
-        } else {
-            _.output = _.core;
+    _.core = string.slice(2, -1);
+
+
+    if (/\([^\)]+\)/g.test(_.core)) {
+        // find () in value
+        _.output = _.core.match(/\([^\)]+\)/g)[0].slice(1, -1);
+    } else {
+        _.output = _.core;
+    }
+
+    const all = {};
+    Object.keys(namespace.core).forEach(item => {
+        all[item] = namespace.core[item];
+    });
+    Object.keys(namespace.self).forEach(item => {
+        all[item] = namespace.self[item];
+    });
+    Object.keys(all).some(item => {
+        if (item === _.output) {
+            _.output = all[item];
+            return true;
         }
+    });
 
-        const all = {};
-        Object.keys(namespace.core).forEach(item => {
-            all[item] = namespace.core[item];
-        });
-        Object.keys(namespace.self).forEach(item => {
-            all[item] = namespace.self[item];
-        });
-        Object.keys(all).some(item => {
-            if (item === _.output) {
-                _.output = all[item];
-                return true;
-            }
-        });
+    const hasFunction = FNS.some(item => _.core.indexOf(item) !== -1);
 
-        const hasFunction = FNS.some(item => _.core.indexOf(item) !== -1);
-
-        if (!hasFunction) {
-            return _;
-        }
-
-        const hasAddition = _.core.indexOf('*') !== -1;
-
-        if (!hasAddition) {
-            FNS.some(fnItem => {
-                if (_.core.indexOf(fnItem) !== -1) {
-                    _.output = fnMode(_.output, fnItem);
-                }
-            });
-        } else {
-            const fnList = [];
-            _.core.split('*').forEach(item => {
-                FNS.some(fn => {
-                    if (item.indexOf(fn) !== -1) {
-                        fnList.push(fn);
-                        return true;
-                    }
-                });
-            });
-
-            fnList.forEach(item => {
-                _.output = fnMode(_.output, item);
-            });
-        }
-
+    if (!hasFunction) {
         return _;
     }
+
+    const hasAddition = _.core.indexOf('*') !== -1;
+
+    if (!hasAddition) {
+        FNS.some(fnItem => {
+            if (_.core.indexOf(fnItem) !== -1) {
+                _.output = fnMode(_.output, fnItem);
+            }
+        });
+    } else {
+        const fnList = [];
+        _.core.split('*').forEach(item => {
+            FNS.some(fn => {
+                if (item.indexOf(fn) !== -1) {
+                    fnList.push(fn);
+                    return true;
+                }
+            });
+        });
+
+        fnList.forEach(item => {
+            _.output = fnMode(_.output, item);
+        });
+    }
+
+    return _;
 };

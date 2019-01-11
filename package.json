@@ -7,7 +7,8 @@
   "description": "a self-defining module generator plugin for bb-mt",
   "main": "index.js",
   "scripts": {
-    "build": "babel src --out-dir dist"
+    "build": "babel src --out-dir dist",
+    "test": "jest ./test/*"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,8 @@
   "homepage": "https://github.com/xgfe/bb-plugin-add#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1"
+    "babel-preset-es2015": "^6.24.1",
+    "jest": "^23.6.0"
   },
   "dependencies": {
     "babel-core": "^6.26.3",
