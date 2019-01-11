@@ -30,7 +30,8 @@ const globalConfigPath = DESTINATION_PATH + tplPath + 'bb.config.js';
 
 const requireFile = function (path) {
   try {
-    return require(path).default;
+    const assets = require(path);
+    return assets.default || assets;
   } catch (e) {
     if (e instanceof Error && e.code === "MODULE_NOT_FOUND") {
       console.log(path + ' module not find!');
