@@ -3,7 +3,7 @@
   "bin": {
     "bb-plugin-add": "./bin/index.js"
   },
-  "version": "0.2.16",
+  "version": "0.3.0",
   "description": "a self-defining module generator plugin for bb-mt",
   "main": "index.js",
   "scripts": {
