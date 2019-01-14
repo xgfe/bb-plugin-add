@@ -20,14 +20,62 @@ Now, We find .tpl in root path.
 $ cd .tpl
 ```
 
-Then, create config.json:
+Then, create bb.config.js
 ```sh
-# config.json
-{
-  "my-component":{
-    "path":"./my-component"
-  }
-}
+# bb.config.js
+const componentConfig = {
+	source: './component/', // 模板源
+	output: './src/components/${HEAD_UPPER(name)}/', // 输出文件路径
+	queue: [
+		{
+			template: 'map.js', // 模板文件
+			filename: '../index.js', // 输出文件
+			progress: function (compiler) { // 钩子函数：bb-plugin-add@0.3.x及以上支持
+        const content = "export { ${HEAD_UPPER(name)}, example as ${HEAD_UPPER(name)}Example} from './${HEAD_UPPER(name)}'";
+        // 在/** @bb-mt add */前插入内容
+				compiler.comment('add').before.insert(content);
+			}
+		},
+    {
+      template: 'index.js',
+      filename: 'index.js'
+    },
+		{
+			template: 'component.vue',
+			filename: '${HEAD_UPPER(name)}.vue'
+		},
+		{
+			template: 'component.less',
+      filename: '${HEAD_UPPER(name)}.less'
+    },
+    {
+      template: 'componentConstants.js',
+      filename: '${HEAD_UPPER(name)}Constants.js'
+    },
+    {
+      template: 'example/index.js',
+      filename: 'example/index.js'
+    },
+    {
+      template: 'example/exampleCode.vue',
+      filename: 'example/exampleCode.vue'
+    },
+    {
+      template: 'example/exampleCodeConstants.js',
+      filename: 'example/exampleCodeConstants.js'
+    },
+    {
+      template: 'example/exampleCodeStyle.less',
+      filename: 'example/exampleCodeStyle.less'
+    }
+	]
+};
+
+module.exports = {
+	add: {
+		component: componentConfig
+	}
+};
 ```
 
 ## Usage
